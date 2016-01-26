@@ -1542,8 +1542,12 @@
 					e.preventDefault();
 					return;
 				case KEY_RETURN:
+					var callbackAfterSelect = function() {
+                        self.trigger('enter_pressed_after_select', self);
+                    };
+
 					if (self.isOpen && self.$activeOption) {
-						self.onOptionSelect({currentTarget: self.$activeOption});
+						self.onOptionSelect({currentTarget: self.$activeOption}, callbackAfterSelect);
 						e.preventDefault();
 					}
 					return;
@@ -1710,7 +1714,7 @@
 		 * @param {object} e
 		 * @returns {boolean}
 		 */
-		onOptionSelect: function(e) {
+		onOptionSelect: function(e, callbackAfterSelect) {
 			var value, $target, $option, self = this;
 	
 			if (e.preventDefault) {
@@ -1724,6 +1728,7 @@
 					if (self.settings.closeAfterSelect) {
 						self.close();
 					}
+					callbackAfterSelect && callbackAfterSelect();
 				});
 			} else {
 				value = $target.attr('data-value');
@@ -1736,6 +1741,7 @@
 					} else if (!self.settings.hideSelected && e.type && /mouse/.test(e.type)) {
 						self.setActiveOption(self.getOption(value));
 					}
+					callbackAfterSelect && callbackAfterSelect();
 				}
 			}
 		},
